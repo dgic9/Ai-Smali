@@ -63,4 +63,8 @@ export interface Translation {
   selectModel: string;
   modelFlash: string;
   modelPro: string;
+  // API Key Settings
+  apiKeyLabel: string;
+  apiKeyPlaceholder: string;
+  apiKeyHelp: string;
 }

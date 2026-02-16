@@ -3,30 +3,48 @@ import { GoogleGenAI, Chat, GenerateContentResponse } from "@google/genai";
 import { getSystemInstruction } from "../constants";
 import { Language, AnalysisResult, AIModel } from "../types";
 
-// Safely access process.env.API_KEY to prevent crashing if process is undefined
-const getApiKey = (): string => {
+// Key management
+const STORAGE_KEY = 'gemini_api_key';
+let userApiKey = '';
+
+// Initialize from storage if available
+if (typeof localStorage !== 'undefined') {
+  userApiKey = localStorage.getItem(STORAGE_KEY) || '';
+}
+
+export const setApiKey = (key: string) => {
+  userApiKey = key.trim();
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem(STORAGE_KEY, userApiKey);
+  }
+  // Reset chat session when key changes to ensure new client is created
+  resetChat();
+}
+
+export const getApiKey = (): string => {
+  if (userApiKey) return userApiKey;
+  
   try {
+    // Fallback to process.env
     // @ts-ignore
     return (typeof process !== 'undefined' && process.env && process.env.API_KEY) || '';
   } catch (e) {
-    console.warn("Error accessing process.env", e);
     return '';
   }
 };
 
-const apiKey = getApiKey();
-
 const getAIClient = () => {
-  if (!apiKey) {
-    console.warn("API Key is missing. Please set process.env.API_KEY.");
+  const key = getApiKey();
+  if (!key) {
+    console.warn("API Key is missing.");
     return null;
   }
-  return new GoogleGenAI({ apiKey });
+  return new GoogleGenAI({ apiKey: key });
 };
 
 export const analyzeSmali = async (code: string, language: Language, model: AIModel): Promise<AnalysisResult> => {
   const ai = getAIClient();
-  if (!ai) return { message: "Error: API Key is missing. Unable to contact AI Tutor.", fixedCode: null };
+  if (!ai) return { message: "Error: API Key is missing. Please add it in Settings.", fixedCode: null };
 
   try {
     // Structured prompt to separate analysis from code fix
@@ -80,7 +98,7 @@ export const analyzeSmali = async (code: string, language: Language, model: AIMo
 
 export const convertJavaToSmali = async (javaCode: string, model: AIModel): Promise<string> => {
     const ai = getAIClient();
-    if (!ai) return "# Error: API Key missing.";
+    if (!ai) return "# Error: API Key missing. Check Settings.";
 
     try {
         const prompt = `Convert the following Java code to Smali. 
@@ -115,7 +133,7 @@ let currentModel: AIModel = 'gemini-3-flash-preview';
 
 export const sendMessageToTutor = async (message: string, language: Language, model: AIModel, codeContext?: string): Promise<string> => {
   const ai = getAIClient();
-  if (!ai) return "Error: API Key is missing. I cannot reply.";
+  if (!ai) return "Error: API Key is missing. Please go to Settings and enter your key.";
 
   try {
     // Re-create session if language changed, model changed, or doesn't exist
@@ -152,7 +170,7 @@ export const sendMessageToTutor = async (message: string, language: Language, mo
     console.error("Gemini Chat Error:", error);
     // If chat fails (e.g. token expiry, network, or bad state), reset session
     chatSession = null; 
-    return "Sorry, I encountered an error (Connection or API limit). Please try asking again.";
+    return "Sorry, I encountered an error (Connection or Invalid API Key). Please check Settings.";
   }
 };
 

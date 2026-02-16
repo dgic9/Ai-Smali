@@ -37,6 +37,9 @@ export const TRANSLATIONS: Record<Language, Translation> = {
     selectModel: 'Select AI Model',
     modelFlash: 'Gemini 3.0 Flash (Fast)',
     modelPro: 'Gemini 3.0 Pro (Complex Reasoning)',
+    apiKeyLabel: 'Gemini API Key',
+    apiKeyPlaceholder: 'Paste your API Key here...',
+    apiKeyHelp: 'Your key is stored locally in your browser.',
   },
   hi: {
     learn: 'सीखें',
@@ -68,6 +71,9 @@ export const TRANSLATIONS: Record<Language, Translation> = {
     selectModel: 'AI मॉडल चुनें',
     modelFlash: 'Gemini 3.0 Flash (तेज़)',
     modelPro: 'Gemini 3.0 Pro (विस्तृत)',
+    apiKeyLabel: 'Gemini API कुंजी',
+    apiKeyPlaceholder: 'अपनी API कुंजी यहाँ पेस्ट करें...',
+    apiKeyHelp: 'आपकी कुंजी आपके ब्राउज़र में सुरक्षित रहेगी।',
   },
   hinglish: {
     learn: 'Seekho',
@@ -99,6 +105,9 @@ export const TRANSLATIONS: Record<Language, Translation> = {
     selectModel: 'AI Model Select Karo',
     modelFlash: 'Gemini 3.0 Flash (Fast)',
     modelPro: 'Gemini 3.0 Pro (Powerful)',
+    apiKeyLabel: 'Gemini API Key',
+    apiKeyPlaceholder: 'Apna API Key yahan paste karo...',
+    apiKeyHelp: 'Key browser mein save rahegi.',
   }
 };
 

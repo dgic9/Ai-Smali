@@ -6,7 +6,7 @@ import { MaterialIcon } from './components/MaterialIcon';
 import { MessageBubble } from './components/MessageBubble';
 import { Tab, ChatMessage, Language, AnalysisResult, AIModel } from './types';
 import { LESSONS, DEFAULT_EDITOR_CODE, TRANSLATIONS, CODE_TEMPLATES, MODELS } from './constants';
-import { analyzeSmali, sendMessageToTutor, resetChat, convertJavaToSmali } from './services/geminiService';
+import { analyzeSmali, sendMessageToTutor, resetChat, convertJavaToSmali, setApiKey, getApiKey } from './services/geminiService';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('learn');
@@ -20,6 +20,7 @@ const App: React.FC = () => {
   const [aiModel, setAiModel] = useState<AIModel>('gemini-3-flash-preview');
   const [showSettings, setShowSettings] = useState(false);
   const [fixApplied, setFixApplied] = useState(false);
+  const [apiKeyInput, setApiKeyInput] = useState('');
   
   // New Features State
   const [showTemplates, setShowTemplates] = useState(false);
@@ -44,6 +45,9 @@ const App: React.FC = () => {
   // Initialize Chat greeting when language changes
   useEffect(() => {
     resetChat();
+    // Load existing API key for display
+    setApiKeyInput(getApiKey());
+
     const greeting = language === 'hi' ? 'नमस्ते! मैं आपका Smali गुरु हूँ। पूछिए क्या पूछना है।' :
                      language === 'hinglish' ? 'Hello! Main hoon aapka Smali Tutor. Android reverse engineering ke baare mein kuch bhi puccho.' :
                      'Hello! I am your Smali Tutor. Ask me anything about Android reverse engineering.';
@@ -140,6 +144,12 @@ const App: React.FC = () => {
   const toggleModel = (model: AIModel) => {
       setAiModel(model);
   };
+  
+  const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const val = e.target.value;
+      setApiKeyInput(val);
+      setApiKey(val);
+  };
 
   const handleEditorScroll = () => {
     if (textareaRef.current && lineNumbersRef.current) {
@@ -217,7 +227,7 @@ const App: React.FC = () => {
 
         {/* AI Model Section */}
         <h3 className="text-sm font-medium text-[#c4c7c5] mb-2">{t.selectModel}</h3>
-        <div className="space-y-2">
+        <div className="space-y-2 mb-6">
             {MODELS.map((model) => (
                  <button
                  key={model.id}
@@ -233,6 +243,18 @@ const App: React.FC = () => {
                </button>
             ))}
         </div>
+
+        {/* API Key Section */}
+        <h3 className="text-sm font-medium text-[#c4c7c5] mb-2">{t.apiKeyLabel}</h3>
+        <input 
+            type="text" 
+            value={apiKeyInput}
+            onChange={handleApiKeyChange}
+            placeholder={t.apiKeyPlaceholder}
+            className="w-full bg-[#1a1c1e] text-[#e2e2e6] px-4 py-3 rounded-xl border border-[#444746]/30 focus:outline-none focus:border-[#a8c7fa] placeholder-[#8e918f]"
+        />
+        <p className="text-[10px] text-[#c4c7c5] mt-1.5 ml-1">{t.apiKeyHelp}</p>
+
       </div>
     </div>
   );
