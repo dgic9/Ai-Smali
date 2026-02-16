@@ -1,0 +1,5 @@
+{
+  "name": "Smali Master",
+  "description": "An Android-styled web app for learning Smali code, featuring an AI-powered editor and tutor using Google Gemini.",
+  "requestFramePermissions": []
+}
